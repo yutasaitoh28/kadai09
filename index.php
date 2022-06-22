@@ -1,21 +1,57 @@
 <?php include "includes/init.php" ?>
-<!DOCTYPE html>
-<html lang="en">
-    <?php include "includes/header.php" ?>
-    <body>
-        <?php include "includes/nav.php" ?>
+<?php
+require_once('includes/php_functions.php');
 
+//２．データ登録SQL作成
+$pdo = db_conn();
+$stmt = $pdo->prepare('SELECT * FROM gs_content_table');
+$status = $stmt->execute();
+
+//３．データ表示
+$view = '';
+if ($status == false) {
+    sql_error($stmt);
+} else {
+    $contents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<?php include "includes/header.php" ?>
+<body id="main">
+    <?php include "includes/nav.php" ?>
+    <div class="album py-5 bg-light">
         <div class="container">
-            <?php 
-                if (isset($_SESSION['message'])){
-                    echo "<p class='bg-success text-center'>{$_SESSION['message']}</p>";
-                    unset($_SESSION['message']);
-                }
-            ?>
-            <h1 class="text-center"> Home Page</h1>
-            <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-        </div> <!--Container-->
-        
-        <?php include "includes/footer.php" ?>
-    </body>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <?php foreach ($contents as $content): ?>
+                    <div class="col">
+                        <div class="card shadow-sm">
+                        <?php if ($content['img']): ?>
+                            <img src="./images/<?=$content['img']?>" alt="" class="bd-placeholder-img card-img-top" >
+                        <?php else: ?>
+                            <img src="./images/default_image/no_image_logo.png" alt="" class="bd-placeholder-img card-img-top" >
+                        <?php endif ?>
+                        <div class="card-body">
+                            <h3><?= $content['title'] ?></h3>
+                            <p class="card-text"><?= nl2br($content['content']) ?></p>
+                            <p class="card-text">投稿者：<?= nl2br($content['content']) ?></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">登録日:<?= $content['date'] ?></small>
+                            </div>
+                            <?php if (!is_null($content['update_time'])): ?>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">更新日:<?= $content['update_time'] ?></small>
+                            </div>
+                            <?php endif ?>
+                            <button type="submit" class="btn btn-primary"><a href="detail.php?id=<?=$content['id']?>" style="color:white;text-decoration:none;">編集する</a></button>
+                        </div>
+                        </div>
+                    </div>
+                <!-- </a> -->
+                <?php endforeach ?>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

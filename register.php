@@ -22,17 +22,24 @@
         if ($email != $email_conf){
             $error[] = "メールアドレスがマッチしません。";
         }
+        if(count_field_val($pdo, "users", "username", $uname)!=0){
+            $error[] = "入力されたユーザーは既に存在します。";
+        }
+        if(count_field_val($pdo, "users", "email", $uname)!=0){
+            $error[] = "入力されたメールアドレスは既に登録されています。";
+        }
 
-        if(!isset($error)){
-            try{
-                $sql = "INSERT INTO users (firstname, lastname, username, email, password, comments, validationcode, active, joined, last_login)
-                VALUES (:firstname,:lastname,:username,:email,:password,:comments, 'test', 0, current_date, current_date)";
+        if (!isset($error)) {
+            $vcode=generate_token();
+            try {
+                $sql = "INSERT INTO users (firstname, lastname, username, email, password, comments, validationcode, active, joined, last_login) VALUES (:firstname, :lastname, :username, :email, :password, :comments, :vcode, 0, current_date, current_date)";
                 $stmnt = $pdo->prepare($sql);
-                $user_data = [':firstname'=>$fname,':lastname'=>$lname,':username'=>$uname,':email'=>$email,':password'=>$pword,':comments'=>$comments];
+                $user_data = [':firstname'=>$fname, ':lastname'=>$lname, ':username'=>$uname, ':email'=>$email, ':password'=>password_hash($pword, PASSWORD_BCRYPT), ':comments'=>$comments, ':vcode'=>$vcode];
                 $stmnt->execute($user_data);
-                $_SESSION['message']="新規登録が完了しました。";
-                header("Location: index.php");
-            }catch(PDOException $e){
+                redirect("index.php");
+                // $body = "<p>Please click on the link below to activate your acoount</p><p><a href='activate.php?user={$uname}&code={$vcode}'>Activate Account</a></p>";
+                // send_mail($email, "Active User", $body, $from_email, $reply_email);
+            } catch(PDOException $e) {
                 echo "Error: ".$e->getMessage();
             }
         }
@@ -57,10 +64,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 col-lg-offset-3">
-                    <?php
+                    <?php 
+                        show_msg();
                         if(isset($error)){
                             foreach($error as $msg){
-                                echo "<p class='bg-danger text-center'>{$msg}</p>";
+                                echo "<h4 class='bg-danger text-center'>{$msg}</h4>";
                             }
                         }
                     ?>

@@ -7,18 +7,21 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand">ユーザー管理システム</span>
             </div>
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="index.php">ホーム</a></li>
-                    <li><a href="page1.php">ページ１</a></li>
-                    <li><a href="page2.php">ページ２</a></li>
-                    <li><a href="page3.php">ページ３</a></li>
+                    <li class="active"><a href="index.php">ブログ画面</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="login.php">ログイン</a></li>
-                    <li><a href="register.php">新規登録</a></li>
+                    <?php
+                        if(logged_in()){
+                            echo "<li><a href='mycontent.php'>マイページ</a></li>";
+                            echo "<li><a href='logout.php'>ログアウト</a></li>";
+                        }else{
+                            echo "<li><a href='login.php'>ログイン</a></li>";
+                            echo "<li><a href='register.php'>新規登録</a></li>";
+                        }
+                    ?>
                 </ul>
             </div><!--/.nav-collapse -->
         </div>

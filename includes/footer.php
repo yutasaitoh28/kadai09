@@ -1,3 +1,3 @@
         <div class="container">
-            <p class="text-center">&copy; <a href='index.php'>Imaginary Environmental</a> 2018</p>
+            <p class="text-center">&copy; <a href='index.php'>G's Academy</a> 2022</p>
         </div> <!--Container-->
